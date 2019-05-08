@@ -136,7 +136,7 @@
     "vmStorageAccountContainerName": "vhd",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
     "computerNamePrefix": "kafkanode",
-    "scriptUrl": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/kafka-on-ubuntu/",
+    "scriptUrl": "https://github.com/sapnaavya/ARM_Template_Kafka/",
     "templateUrl": "[variables('scriptUrl')]",
     "sharedTemplateName": "shared-resources",
     "jumpboxTemplateName": "jumpbox-resources-",
