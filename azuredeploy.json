@@ -136,7 +136,7 @@
     "vmStorageAccountContainerName": "vhd",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
     "computerNamePrefix": "kafkanode",
-    "scriptUrl": "https://github.com/sapnaavya/ARM_Template_Kafka/",
+    "scriptUrl": "https://raw.githubusercontent.com/sapnaavya/ARM_Template_Kafka/master/",
     "templateUrl": "[variables('scriptUrl')]",
     "sharedTemplateName": "shared-resources",
     "jumpboxTemplateName": "jumpbox-resources-",
