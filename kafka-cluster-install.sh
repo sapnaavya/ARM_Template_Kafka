@@ -134,7 +134,7 @@ expand_ip_range_for_server_properties() {
     IFS='-' read -a HOST_IPS <<< "$1"
     for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
     do
-        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg       
+        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.14/conf/zoo.cfg       
     done
 }
 
