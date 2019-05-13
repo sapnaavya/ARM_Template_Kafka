@@ -37,6 +37,8 @@
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' EXIT SIGHUP SIGINT SIGQUIT
 exec 1>> /mnt/kafka_extension.log 2>&1
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x +H
 
 help()
 {
