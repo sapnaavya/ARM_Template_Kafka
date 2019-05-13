@@ -217,7 +217,7 @@ install_kafka()
 
 #Install Oracle Java
 #------------------------
-#install_java
+install_java
 
 if [ ${ZOOKEEPER1KAFKA0} -eq "1" ];
 then
