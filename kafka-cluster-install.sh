@@ -116,13 +116,17 @@ done
 install_java()
 {
     echo "Installing Java"
-    #add-apt-repository -y ppa:webupd8team/java
-    #apt-get -y update 
-    #echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-    #echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-    # apt-get -y install oracle-java7-installer
-    sudo apt-get install openjdk-6-jdk
-    #apt-cache search openjdk
+    cp -f /etc/apt/sources.list /etc/apt/sources.list.bak
+    cat - /etc/apt/sources.list.bak > /etc/apt/sources.list << EOF
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-security main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-backports main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise-updates main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt precise main restricted universe multiverse
+EOF
+    apt-get update >> /mnt/aptget.log
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet default-jre >> /mnt/aptget.log
+    JAVA_HOME=`readlink -f /usr/bin/java | sed 's:/bin/java::'`
+    echo -e "export JAVA_HOME=$JAVA_HOME" >> /etc/profile.d/java.sh
 }
 
 # Expand a list of successive IP range defined by a starting address prefix (e.g. 10.0.0.1) and the number of machines in the range
