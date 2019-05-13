@@ -83,8 +83,9 @@ INSTANCE_COUNT=1
 ZOOKEEPER_PORT="2181"
 
 #Loop through options passed
-while getopts :k:b:z:i:c:p:h optname; do
-    echo "Option $optname set with value ${OPTARG}"
+while getopts :k:b:z:i:c:p:h optname
+do
+  echo "Option ${optname} set with value ${OPTARG}"
   case $optname in
     k)  #kafka version
       KF_VERSION=${OPTARG}
@@ -105,8 +106,8 @@ while getopts :k:b:z:i:c:p:h optname; do
       help
       exit 2
       ;;
-    \?) #unrecognized option - show help
-      echo -e \\n"Option -${BOLD}$OPTARG${NORM} not allowed."
+    *) #unrecognized option - show help
+      echo -e "Option -${BOLD}$OPTARG${NORM} not allowed."
       help
       exit 2
       ;;
