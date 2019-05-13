@@ -71,11 +71,9 @@
     },
     "kafkaVersion": {
       "type": "string",
-      "defaultValue": "0.8.2.1",
+      "defaultValue": "2.2.0",
       "allowedValues": [
-        "0.8.2.1",
-        "0.8.2.0",
-        "0.8.1.1"
+        "2.2.0"
       ],
       "metadata": {
         "description": "The version of the Kafka package to be deployed on the cluster (or use 'stable' to pull in the latest and greatest)"
