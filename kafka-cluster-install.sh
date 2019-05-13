@@ -40,8 +40,7 @@ exec 1>> /mnt/kafka_extension.log 2>&1
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -x +H
 
-help()
-{
+function help() {
     #TODO: Add help text here
     echo "This script installs kafka cluster on Ubuntu"
     echo "Parameters:"
@@ -54,7 +53,7 @@ help()
 
 echo "Begin execution of kafka script extension on ${HOSTNAME}"
 
-if [ "${UID}" -ne 0 ];
+if [ "${UID}" -ne 0 ]
 then
     echo "Script executed without root permissions"
     echo "You must be root to run this program." >&2
@@ -64,9 +63,9 @@ fi
 # TEMP FIX - Re-evaluate and remove when possible
 # This is an interim fix for hostname resolution in current VM
 grep -q "${HOSTNAME}" /etc/hosts
-if [ $? -eq $SUCCESS ];
+if [ "${?}" -eq 0 ]
 then
-  echo "${HOSTNAME}found in /etc/hosts"
+  echo "${HOSTNAME} found in /etc/hosts"
 else
   echo "${HOSTNAME} not found in /etc/hosts"
   # Append it to the hsots file if not there
@@ -115,8 +114,7 @@ while getopts :k:b:z:i:c:p:h optname; do
 done
 
 # Install Oracle Java
-install_java()
-{
+function install_java() {
     echo "Installing Java"
     cp -f /etc/apt/sources.list /etc/apt/sources.list.bak
     cat - /etc/apt/sources.list.bak > /etc/apt/sources.list << EOF
@@ -134,7 +132,7 @@ EOF
 # Expand a list of successive IP range defined by a starting address prefix (e.g. 10.0.0.1) and the number of machines in the range
 # 10.0.0.1-3 would be converted to "10.0.0.10 10.0.0.11 10.0.0.12"
 
-expand_ip_range_for_server_properties() {
+function expand_ip_range_for_server_properties() {
     IFS='-' read -a HOST_IPS <<< "$1"
     for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
     do
@@ -144,7 +142,7 @@ expand_ip_range_for_server_properties() {
 
 function join { local IFS="$1"; shift; echo "$*"; }
 
-expand_ip_range() {
+function expand_ip_range() {
     IFS='-' read -a HOST_IPS <<< "$1"
 
     declare -a EXPAND_STATICIP_RANGE_RESULTS=()
@@ -159,8 +157,7 @@ expand_ip_range() {
 }
 
 # Install Zookeeper - can expose zookeeper version
-install_zookeeper()
-{
+function install_zookeeper() {
 	mkdir -p /var/lib/zookeeper
 	cd /var/lib/zookeeper
 	wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/stable/zookeeper-3.4.14.tar.gz"
@@ -182,8 +179,7 @@ install_zookeeper()
 }
 
 # Install kafka
-install_kafka()
-{
+function install_kafka() {
 	cd /usr/local
 	name=kafka
 	version=${KF_VERSION}
