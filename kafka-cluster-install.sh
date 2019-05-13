@@ -33,6 +33,11 @@
 ### -Implement Idempotency and Configuration Change Support
 ### -Recovery Settings (These can be changed via API)
 
+#Setup logging
+exec 3>&1 4>&2
+trap 'exec 2>&4 1>&3' EXIT SIGHUP SIGINT SIGQUIT
+exec 1>> /mnt/kafka_extension.log 2>&1
+
 help()
 {
     #TODO: Add help text here
@@ -45,16 +50,11 @@ help()
     echo "-i zookeeper Private IP address prefix"
 }
 
-log()
-{
-	echo "$1" >> /mnt/kafka_extension.log
-}
-
-log "Begin execution of kafka script extension on ${HOSTNAME}"
+echo "Begin execution of kafka script extension on ${HOSTNAME}"
 
 if [ "${UID}" -ne 0 ];
 then
-    log "Script executed without root permissions"
+    echo "Script executed without root permissions"
     echo "You must be root to run this program." >&2
     exit 3
 fi
@@ -69,7 +69,7 @@ else
   echo "${HOSTNAME} not found in /etc/hosts"
   # Append it to the hsots file if not there
   echo "127.0.0.1 $(hostname)" >> /etc/hosts
-  log "hostname ${HOSTNAME} added to /etc/hosts"
+  echo "hostname ${HOSTNAME} added to /etc/hosts"
 fi
 
 #Script Parameters
@@ -83,7 +83,7 @@ ZOOKEEPER_PORT="2181"
 
 #Loop through options passed
 while getopts :k:b:z:i:c:p:h optname; do
-    log "Option $optname set with value ${OPTARG}"
+    echo "Option $optname set with value ${OPTARG}"
   case $optname in
     k)  #kafka version
       KF_VERSION=${OPTARG}
@@ -115,7 +115,7 @@ done
 # Install Oracle Java
 install_java()
 {
-    log "Installing Java"
+    echo "Installing Java"
     #add-apt-repository -y ppa:webupd8team/java
     #apt-get -y update 
     #echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
@@ -231,4 +231,3 @@ else
 	#-----------------------
 	install_kafka
 fi
-
