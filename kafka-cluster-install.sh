@@ -34,6 +34,11 @@
 ### -Recovery Settings (These can be changed via API)
 
 #Setup logging
+cat >> /mnt/kafka_extension.log << EOF
+Running Kafka setup
+=> $0 $@
+EOF
+cp $0 /mnt
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' EXIT SIGHUP SIGINT SIGQUIT
 exec 1>> /mnt/kafka_extension.log 2>&1
@@ -100,8 +105,8 @@ do
       ZOOKEEPER_IP_PREFIX=${OPTARG}
       ;;
     c) # Number of instances
-	INSTANCE_COUNT=${OPTARG}
-	;;
+      INSTANCE_COUNT=${OPTARG}
+      ;;
     h)  #show help
       help
       exit 2
@@ -137,80 +142,74 @@ function expand_ip_range_for_server_properties() {
     IFS='-' read -a HOST_IPS <<< "$1"
     for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
     do
-        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.14/conf/zoo.cfg       
+        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.14/conf/zoo.cfg
     done
 }
 
-function join { local IFS="$1"; shift; echo "$*"; }
+function join() {
+    local IFS="$1"; shift; echo "$*";
+}
 
 function expand_ip_range() {
     IFS='-' read -a HOST_IPS <<< "$1"
-
     declare -a EXPAND_STATICIP_RANGE_RESULTS=()
-
     for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
     do
         HOST="${HOST_IPS[0]}${n}:${ZOOKEEPER_PORT}"
-                EXPAND_STATICIP_RANGE_RESULTS+=($HOST)
+        EXPAND_STATICIP_RANGE_RESULTS+=($HOST)
     done
-
     echo "${EXPAND_STATICIP_RANGE_RESULTS[@]}"
 }
 
 # Install Zookeeper - can expose zookeeper version
 function install_zookeeper() {
-	mkdir -p /var/lib/zookeeper
-	cd /var/lib/zookeeper
-	wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/stable/zookeeper-3.4.14.tar.gz"
-	tar -xvf "zookeeper-3.4.14.tar.gz"
-
-	touch zookeeper-3.4.14/conf/zoo.cfg
-
-	echo "tickTime=2000" >> zookeeper-3.4.14/conf/zoo.cfg
-	echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.14/conf/zoo.cfg
-	echo "clientPort=2181" >> zookeeper-3.4.14/conf/zoo.cfg
-	echo "initLimit=5" >> zookeeper-3.4.14/conf/zoo.cfg
-	echo "syncLimit=2" >> zookeeper-3.4.14/conf/zoo.cfg
-	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg
-	$(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
-
-	echo $(($1+1)) >> /var/lib/zookeeper/myid
-
-	zookeeper-3.4.14/bin/zkServer.sh start
+    mkdir -p /var/lib/zookeeper
+    cd /var/lib/zookeeper
+    wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/stable/zookeeper-3.4.14.tar.gz"
+    tar -xvf "zookeeper-3.4.14.tar.gz"
+    touch zookeeper-3.4.14/conf/zoo.cfg
+    echo "tickTime=2000" >> zookeeper-3.4.14/conf/zoo.cfg
+    echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.14/conf/zoo.cfg
+    echo "clientPort=2181" >> zookeeper-3.4.14/conf/zoo.cfg
+    echo "initLimit=5" >> zookeeper-3.4.14/conf/zoo.cfg
+    echo "syncLimit=2" >> zookeeper-3.4.14/conf/zoo.cfg
+    # OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg
+    $(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
+    echo $(($1+1)) >> /var/lib/zookeeper/myid
+    zookeeper-3.4.14/bin/zkServer.sh start
 }
 
 # Install kafka
 function install_kafka() {
-	cd /usr/local
-	name=kafka
-	version=${KF_VERSION}
-	#this Kafka version is prefix same used for all versions
-	kafkaversion="2.11"
-	description="Apache Kafka is a distributed publish-subscribe messaging system."
-	url="https://kafka.apache.org/"
-	arch="all"
-	section="misc"
-	license="Apache Software License 2.0"
-	package_version="-1"
-	src_package="kafka_${kafkaversion}-${version}.tgz"
-	download_url=http://www-eu.apache.org/dist/kafka/${version}/${src_package} 
-	rm -rf kafka
-	mkdir -p kafka
-	cd kafka
-	#_ MAIN _#
-	if [[ ! -f "${src_package}" ]]; then
-	  wget ${download_url}
-	fi
-	tar zxf ${src_package}
-	cd kafka_${kafkaversion}-${version}
-	
-	sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties 
-	sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties 
-#	cp config/server.properties config/server-1.properties 
-#	sed -r -i "s/(broker.id)=(.*)/\1=1/g" config/server-1.properties 
-#	sed -r -i "s/^(port)=(.*)/\1=9093/g" config/server-1.properties````
-	chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
-	/usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
+    cd /usr/local
+    name=kafka
+    version=${KF_VERSION}
+    #this Kafka version is prefix same used for all versions
+    kafkaversion="2.11"
+    description="Apache Kafka is a distributed publish-subscribe messaging system."
+    url="https://kafka.apache.org/"
+    arch="all"
+    section="misc"
+    license="Apache Software License 2.0"
+    package_version="-1"
+    src_package="kafka_${kafkaversion}-${version}.tgz"
+    download_url=http://www-eu.apache.org/dist/kafka/${version}/${src_package}
+    rm -rf kafka
+    mkdir -p kafka
+    cd kafka
+    #_ MAIN _#
+    if [[ ! -f "${src_package}" ]]; then
+        wget ${download_url}
+    fi
+    tar zxf ${src_package}
+    cd kafka_${kafkaversion}-${version}
+    sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties
+    sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties
+    #cp config/server.properties config/server-1.properties
+    #sed -r -i "s/(broker.id)=(.*)/\1=1/g" config/server-1.properties
+    #sed -r -i "s/^(port)=(.*)/\1=9093/g" config/server-1.properties````
+    chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
+    /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
 }
 
 # Primary Install Tasks
@@ -224,13 +223,13 @@ install_java
 
 if [ ${ZOOKEEPER1KAFKA0} -eq "1" ];
 then
-	#
-	#Install zookeeper
-	#-----------------------
-	install_zookeeper
+    #
+    #Install zookeeper
+    #-----------------------
+    install_zookeeper
 else
-	#
-	#Install kafka
-	#-----------------------
-	install_kafka
+    #
+    #Install kafka
+    #-----------------------
+    install_kafka
 fi
