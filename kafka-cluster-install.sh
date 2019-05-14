@@ -150,15 +150,17 @@ function join() {
     local IFS="$1"; shift; echo "$*";
 }
 
-function expand_ip_range() {
-    IFS='-' read -a HOST_IPS <<< "$1"
-    declare -a EXPAND_STATICIP_RANGE_RESULTS=()
-    for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
+function expand_ip_range() 
+{
+    count="$(echo "$1" | sed 's/.*-//')"
+    prefix="$(echo "$1" | sed 's/-.*//')"
+    declare -a result=()
+    for (( n=0 ; n<count ; n++))
     do
-        HOST="${HOST_IPS[0]}${n}:${ZOOKEEPER_PORT}"
-        EXPAND_STATICIP_RANGE_RESULTS+=($HOST)
+    host="${prefix}${n}:${ZOOKEEPER_PORT}"
+    result+=($host)
     done
-    echo "${EXPAND_STATICIP_RANGE_RESULTS[@]}"
+    echo "${result[@]}"
 }
 
 # Install Zookeeper - can expose zookeeper version
