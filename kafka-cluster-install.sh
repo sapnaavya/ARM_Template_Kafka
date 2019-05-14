@@ -139,10 +139,11 @@ EOF
 # 10.0.0.1-3 would be converted to "10.0.0.10 10.0.0.11 10.0.0.12"
 
 function expand_ip_range_for_server_properties() {
-    IFS='-' read -a HOST_IPS <<< "$1"
-    for (( n=0 ; n<("${HOST_IPS[1]}"+0) ; n++))
+    count="$(echo "$1" | sed 's/.*-//')"
+    prefix="$(echo "$1" | sed 's/-.*//')"
+    for (( n=0 ; n<count ; n++))
     do
-        echo "server.$(expr ${n} + 1)=${HOST_IPS[0]}${n}:2888:3888" >> zookeeper-3.4.14/conf/zoo.cfg
+        echo "server.$(expr ${n} + 1)=${prefix}${n}:2888:3888" >> zookeeper-3.4.14/conf/zoo.cfg
     done
 }
 
@@ -157,8 +158,8 @@ function expand_ip_range()
     declare -a result=()
     for (( n=0 ; n<count ; n++))
     do
-    host="${prefix}${n}:${ZOOKEEPER_PORT}"
-    result+=($host)
+        host="${prefix}${n}:${ZOOKEEPER_PORT}"
+        result+=($host)
     done
     echo "${result[@]}"
 }
