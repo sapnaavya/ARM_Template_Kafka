@@ -130,7 +130,17 @@ deb mirror://mirrors.ubuntu.com/mirrors.txt precise-updates main restricted univ
 deb mirror://mirrors.ubuntu.com/mirrors.txt precise main restricted universe multiverse
 EOF
     apt-get update >> /mnt/aptget.log
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet default-jre >> /mnt/aptget.log
+    tries=3
+    while [ $tries -gt 0 ]
+    do
+        DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet default-jre >> /mnt/aptget.log
+        if [[ $? -eq 0 ]]
+        then
+            tries=0
+        else
+            tries=$(($tries - 1))
+        fi
+    done
     JAVA_HOME=`readlink -f /usr/bin/java | sed 's:/bin/java::'`
     echo -e "export JAVA_HOME=$JAVA_HOME" >> /etc/profile.d/java.sh
 }
