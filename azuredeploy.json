@@ -149,7 +149,8 @@
     "jumpboxTemplateName": "jumpbox-resources-",
     "numberOfZookeeperInstances": "[parameters('numberOfZookeeperInstances')]",
     "numberOfKafkaInstances": "[parameters('numberOfKafkaInstances')]",
-    "vmSize" : "[parameters('vmSize')]",
+    "vmSize" : "[parameters('vmSize')]"
+  },
   "resources": [
     {
       "name": "shared-resources",
