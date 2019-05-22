@@ -50,6 +50,7 @@ function help() {
     echo "This script installs kafka cluster on Ubuntu"
     echo "Parameters:"
     echo "-b broker id"
+    echo "-c number of instances"
     echo "-h view this help content"
     echo "-i zookeeper Private IP address prefix"    
     echo "-k kafka version like 0.8.2.1"    
@@ -89,7 +90,7 @@ INSTANCE_COUNT=1
 ZOOKEEPER_PORT="2181"
 
 #Loop through options passed
-while getopts :k:b:z:i:c:p:h optname
+while getopts :b:c:h:i:k:n:z optname
 do
   echo "Option ${optname} set with value ${OPTARG}"
   case $optname in
