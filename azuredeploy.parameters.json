@@ -38,8 +38,14 @@
     "jumpbox": {
       "value": "enabled"
     },
-    "tshirtSize": {
-      "value": "S"
+    "numberOfZookeeperInstances" : {
+      "value": "3"
+    },
+    "numberOfKafkaInstances" : {
+      "value": "3"
+    },
+    "vmSize" : {
+      "value": "Standard_A2"
     }
   }
 }
