@@ -49,11 +49,12 @@ function help() {
     #TODO: Add help text here
     echo "This script installs kafka cluster on Ubuntu"
     echo "Parameters:"
-    echo "-k kafka version like 0.8.2.1"
     echo "-b broker id"
     echo "-h view this help content"
+    echo "-i zookeeper Private IP address prefix"    
+    echo "-k kafka version like 0.8.2.1"    
+    echo "-n instance number 0..n"
     echo "-z zookeeper not kafka"
-    echo "-i zookeeper Private IP address prefix"
 }
 
 echo "Begin execution of kafka script extension on ${HOSTNAME}"
@@ -92,17 +93,8 @@ while getopts :k:b:z:i:c:p:h optname
 do
   echo "Option ${optname} set with value ${OPTARG}"
   case $optname in
-    k)  #kafka version
-      KF_VERSION=${OPTARG}
-      ;;
     b)  #broker id
       BROKER_ID=${OPTARG}
-      ;;
-    z)  #zookeeper not kafka
-      ZOOKEEPER1KAFKA0=${OPTARG}
-      ;;
-    i)  #zookeeper Private IP address prefix
-      ZOOKEEPER_IP_PREFIX=${OPTARG}
       ;;
     c) # Number of instances
       INSTANCE_COUNT=${OPTARG}
@@ -110,6 +102,18 @@ do
     h)  #show help
       help
       exit 2
+      ;;
+    i)  #zookeeper Private IP address prefix
+      ZOOKEEPER_IP_PREFIX=${OPTARG}
+      ;;
+    k)  #kafka version
+      KF_VERSION=${OPTARG}
+      ;;
+    n) # Instance number
+      INSTANCE_NUMBER=${OPTARG}
+      ;;
+    z)  #zookeeper not kafka
+      ZOOKEEPER1KAFKA0=${OPTARG}
       ;;
     *) #unrecognized option - show help
       echo -e "Option -${BOLD}$OPTARG${NORM} not allowed."
@@ -189,7 +193,7 @@ function install_zookeeper() {
     echo "syncLimit=2" >> zookeeper-3.4.14/conf/zoo.cfg
     # OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg
     $(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
-    echo $(($1+1)) >> /var/lib/zookeeper/myid
+    echo $((INSTANCE_NUMBER + 1 )) >> /var/lib/zookeeper/myid
     zookeeper-3.4.14/bin/zkServer.sh start
 }
 
