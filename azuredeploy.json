@@ -112,7 +112,7 @@
     },
     "tshirtSize": {
       "type": "string",
-      "defaultValue": "S",
+      "defaultValue": "M",
       "allowedValues": [
         "S",
         "M",

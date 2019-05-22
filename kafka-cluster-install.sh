@@ -178,7 +178,8 @@ function expand_ip_range()
 function install_zookeeper() {
     mkdir -p /var/lib/zookeeper
     cd /var/lib/zookeeper
-    wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/stable/zookeeper-3.4.14.tar.gz"
+    # wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/stable/zookeeper-3.4.14.tar.gz"
+    wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz"
     tar -xvf "zookeeper-3.4.14.tar.gz"
     touch zookeeper-3.4.14/conf/zoo.cfg
     echo "tickTime=2000" >> zookeeper-3.4.14/conf/zoo.cfg
