@@ -90,7 +90,7 @@ INSTANCE_COUNT=1
 ZOOKEEPER_PORT="2181"
 
 #Loop through options passed
-while getopts :b:c:h:i:k:n:z optname
+while getopts b:c:hi:k:n:z: optname
 do
   echo "Option ${optname} set with value ${OPTARG}"
   case $optname in
@@ -115,11 +115,6 @@ do
       ;;
     z)  #zookeeper not kafka
       ZOOKEEPER1KAFKA0=${OPTARG}
-      ;;
-    *) #unrecognized option - show help
-      echo -e "Option -${BOLD}$OPTARG${NORM} not allowed."
-      help
-      exit 2
       ;;
   esac
 done
