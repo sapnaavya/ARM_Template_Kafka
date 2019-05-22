@@ -119,7 +119,7 @@
     },
     "numberOfKafkaInstances" : {
       "type": "int",
-      "defaultValue": 3,
+      "defaultValue": 5,
       "metadata": {
         "description": "Number of Kafka broker VMs"
       }
